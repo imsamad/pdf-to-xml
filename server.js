@@ -39,7 +39,12 @@ const convertPdfToHTML = async ({ inputFileName, outputFilename }) => {
   await execPromise(command);
 };
 
-app.post("/pdf-to-xml", async (req, res) => {
+
+app.get("/api/v1",(req,res) =>{
+  res.send("ok running")
+})
+
+app.post("/api/v1/pdf-to-xml", async (req, res) => {
   try {
     if (!req.files || !req.files.pdfDoc) {
       return res.status(400).json({ error: "No file uploaded" });
@@ -65,12 +70,13 @@ app.post("/pdf-to-xml", async (req, res) => {
     await htmlToXML({ inputFileName: htmlFilePath, outputFilename: xmlFilePath });
 
     // Delete the PDF and HTML files after conversion
-    await Promise.all([
-      fs.unlink(pdfFilePath).catch((err) => console.error("Error deleting PDF:", err)),
-      fs.unlink(htmlFilePath).catch((err) => console.error("Error deleting HTML:", err)),
-    ]);
+    // await Promise.all([
+    //   fs.unlink(pdfFilePath).catch((err) => console.error("Error deleting PDF:", err)),
+    //   fs.unlink(htmlFilePath).catch((err) => console.error("Error deleting HTML:", err)),
+    // ]);
 
-    res.json({ file: `https://rfp.actuality.live:8000/uploads/${xmlFileName}` });
+    res.json({ file: `http://localhost:8000/uploads/${uploadedFileName}` });
+    // res.json({ file: `https://rfp.actuality.live:8000/uploads/${xmlFileName}` });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Conversion failed" });
