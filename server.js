@@ -70,13 +70,13 @@ app.post("/pdf-to-xml", async (req, res) => {
       fs.unlink(htmlFilePath).catch((err) => console.error("Error deleting HTML:", err)),
     ]);
 
-    res.json({ file: `http://localhost:4000/uploads/${xmlFileName}` });
+    res.json({ file: `https://rfp.actuality.live:8000/uploads/${xmlFileName}` });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Conversion failed" });
   }
 });
 
-app.listen(4000, () => {
-  console.log("Server running on port 4000");
+app.listen(8000, () => {
+  console.log("Server running on port 8000");
 });
