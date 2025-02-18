@@ -39,10 +39,9 @@ const convertPdfToHTML = async ({ inputFileName, outputFilename }) => {
   await execPromise(command);
 };
 
-
-app.get("/api/v1",(req,res) =>{
-  res.send("ok running")
-})
+app.get("/api/v1", (req, res) => {
+  res.send("ok running");
+});
 
 app.post("/api/v1/pdf-to-xml", async (req, res) => {
   try {
@@ -54,7 +53,8 @@ app.post("/api/v1/pdf-to-xml", async (req, res) => {
 
     const uploadedFile = req.files.pdfDoc;
     const extName = path.extname(uploadedFile.name);
-    const baseName = path.basename(uploadedFile.name, extName) + "-" + Date.now();
+    const baseName =
+      path.basename(uploadedFile.name, extName) + "-" + Date.now();
     const uploadedFileName = baseName + extName;
 
     const htmlFileName = baseName + ".html";
@@ -66,17 +66,15 @@ app.post("/api/v1/pdf-to-xml", async (req, res) => {
 
     await uploadedFile.mv(pdfFilePath);
 
-    await convertPdfToHTML({ inputFileName: pdfFilePath, outputFilename: `./uploads/${htmlFileName}` });
+    await convertPdfToHTML({
+      inputFileName: pdfFilePath,
+      outputFilename: `./uploads/${htmlFileName}`,
+    });
     await htmlToXML({ inputFileName: htmlFilePath, outputFilename: xmlFilePath });
 
-    // Delete the PDF and HTML files after conversion
-    // await Promise.all([
-    //   fs.unlink(pdfFilePath).catch((err) => console.error("Error deleting PDF:", err)),
-    //   fs.unlink(htmlFilePath).catch((err) => console.error("Error deleting HTML:", err)),
-    // ]);
-
-    res.json({ file: `http://localhost:8000/uploads/${uploadedFileName}` });
-    // res.json({ file: `https://rfp.actuality.live:8000/uploads/${xmlFileName}` });
+    res.setHeader("Content-Type", "application/xml");
+    res.setHeader("Content-Disposition", `attachment; filename="${xmlFileName}"`);
+    res.download(xmlFilePath);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Conversion failed" });
